@@ -1,17 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class DungeonSettings {
+[System.Serializable]
+public class DungeonSettings : ScriptableObject {
+
+  // For Editor
+  [HideInInspector] public string presetName;
+  [HideInInspector] public bool activePreset = false;
+
+  // For Game
 
   [Header ("Room Size Settings")]
-  public int roomSize;
-  public int minRooms;
-  public int maxRooms;
-  public int nbRooms;
+  [HideInInspector] public int roomSize;
+  [HideInInspector] public int minRooms;
+  [HideInInspector] public int maxRooms;
+  [HideInInspector] public int nbRooms;
 
   [Header ("Dungeon Connexions Settings")]
-  public int heightVariation;
-  public int heightVariationChance;
-  public int dungeonSpread;
+  [HideInInspector] public int heightVariation;
+  [HideInInspector] public int heightVariationChance;
+  [HideInInspector] public int dungeonSpread;
 }
