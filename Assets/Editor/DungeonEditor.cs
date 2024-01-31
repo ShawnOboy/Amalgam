@@ -102,7 +102,7 @@ public class DungeonEditor : EditorWindow {
 
 
         EditorGUI.BeginDisabledGroup(true);
-          dungeonSettings.nbRooms = EditorGUILayout.IntField(new GUIContent("Active Rooms: ", "How much room have been generated so far."), dungeonSettings.nbRooms);
+          dungeonSettings.nbRooms = EditorGUILayout.IntField(new GUIContent("Room Count: ", "How much room have been generated so far."), dungeonSettings.nbRooms);
         EditorGUI.EndDisabledGroup();
 
         EditorGUI.indentLevel--;
@@ -120,6 +120,10 @@ public class DungeonEditor : EditorWindow {
       if(showDungeonConnexions) {
         EditorGUI.indentLevel++;
 
+        EditorGUI.BeginDisabledGroup(dungeonSettings.useRandomSeed);
+          dungeonSettings.seed = EditorGUILayout.TextField(new GUIContent("Seed: ", "Specific seed to use when generating the dungeon. Useful if you want to generate the same dungeon with the same settings."), dungeonSettings.seed);
+        EditorGUI.EndDisabledGroup();
+        dungeonSettings.useRandomSeed = EditorGUILayout.Toggle(new GUIContent("Use Random Seed: ", "If checked, the generation will ignore the specific seed and generate a random one."), dungeonSettings.useRandomSeed);
         dungeonSettings.heightVariation = Mathf.Max(0, EditorGUILayout.IntField(new GUIContent("Height Variation: ", "How much units the next room will be generated on the Y axis."), dungeonSettings.heightVariation));
         dungeonSettings.heightVariationChance = EditorGUILayout.IntSlider(new GUIContent("Height Variation Chance: ", "Chances for the next room to generate higher based on 'heightVariation' variable."), dungeonSettings.heightVariationChance, 0, 100);
         dungeonSettings.dungeonSpread = EditorGUILayout.IntSlider(new GUIContent("Dungeon Spread: ", "How much the dungeon will spread on the X and Z axis. (0 = no gap between rooms | 3 = looks like tree branches (harder to generate))"), dungeonSettings.dungeonSpread, 0, 3);
@@ -128,16 +132,16 @@ public class DungeonEditor : EditorWindow {
       }
     }
     else {
-    GUILayout.BeginHorizontal();
-      GUILayout.FlexibleSpace();
-        GUILayout.Label("No Dungeon Settings has been found!", EditorStyles.boldLabel);
-      GUILayout.FlexibleSpace();
-    GUILayout.EndHorizontal();
-    GUILayout.BeginHorizontal();
-      GUILayout.FlexibleSpace();
-        GUILayout.Label("Try creating a new settings preset or select an existing one.");
-      GUILayout.FlexibleSpace();
-    GUILayout.EndHorizontal();
+      GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+          GUILayout.Label("No Dungeon Settings has been found!", EditorStyles.boldLabel);
+        GUILayout.FlexibleSpace();
+      GUILayout.EndHorizontal();
+      GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+          GUILayout.Label("Try creating a new settings preset or select an existing one.");
+        GUILayout.FlexibleSpace();
+      GUILayout.EndHorizontal();
     }
     
 

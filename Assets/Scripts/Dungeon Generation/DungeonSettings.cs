@@ -16,6 +16,8 @@ public class DungeonSettings : ScriptableObject {
   [HideInInspector] public int nbRooms;
 
   [Header ("Dungeon Connexions Settings")]
+  [HideInInspector] public string seed;
+  [HideInInspector] public bool useRandomSeed;
   [HideInInspector] public int heightVariation;
   [HideInInspector] public int heightVariationChance;
   [HideInInspector] public int dungeonSpread;

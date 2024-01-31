@@ -5,7 +5,7 @@ using UnityEditor;
 
 public class DungeonGenerator : MonoBehaviour {
 
-  private DungeonSettings dungeonSettings;
+  private DungeonSettings _DS;
 
   bool isGenerating = false;
   GameObject dungeon;
@@ -13,15 +13,13 @@ public class DungeonGenerator : MonoBehaviour {
   int i = 0;
 
   private void Awake() {
-    dungeonSettings = GetDungeonSettings();
+    _DS = GetDungeonSettings();
   }
 
   void Update() {
-    if(dungeonSettings == null) Debug.LogError("Missing Dungeon Settings");
+    if(_DS == null) Debug.LogError("Missing Dungeon Settings");
     if(Input.GetKeyDown(KeyCode.S)) {
       StartCoroutine(Generator());
-      Debug.Log(dungeonSettings.minRooms);
-      Debug.Log(dungeonSettings.maxRooms);
     }
   }
 
@@ -39,9 +37,6 @@ public class DungeonGenerator : MonoBehaviour {
   }
 
   void NextRoomGen() {
-
-
-
     // GameObject room = new() {
     //   name = "Room " + i,
     // };
