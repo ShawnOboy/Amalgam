@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 53775a3aec800aa4386a35ed1ab7517e, type: 3}
-  m_Name: BasicSettings
+  m_Name: NewSettingsPreset
   m_EditorClassIdentifier: 
-  presetName: BasicSettings
-  activePreset: 1
-  roomSize: 50
-  minRooms: 25
-  maxRooms: 45
+  presetName: 
+  activePreset: 0
+  roomSize: 0
+  minRooms: 0
+  maxRooms: 0
   nbRooms: 0
   seed: 
-  useRandomSeed: 1
-  heightVariation: 5
-  heightVariationChance: 50
-  dungeonSpread: 3
+  useRandomSeed: 0
+  heightVariation: 0
+  heightVariationChance: 0
+  dungeonSpread: 0

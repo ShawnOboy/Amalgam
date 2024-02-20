@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEditor.PackageManager.UI;
 using System;
 using UnityEditor.ShaderGraph;
+using Unity.VisualScripting;
+using System.Reflection;
 
 public class DungeonEditor : EditorWindow {
 
@@ -14,6 +16,7 @@ public class DungeonEditor : EditorWindow {
   private enum WindowSection {Settings, Types, Information}
   private WindowSection currentSection = WindowSection.Settings;
   private DungeonSettings dungeonSettings;
+  private DungeonSettings originalSettings;
 
 
   // -------------- FOLDOUT --------------
@@ -21,11 +24,12 @@ public class DungeonEditor : EditorWindow {
   private bool showDungeonConnexions = true;
 
   private Vector2 scrollPosition = Vector2.zero;
+  private Vector2 settingsPresetScroll = Vector2.zero;
 
 
   // -------------- EDITOR --------------
 
-  [MenuItem("New Dungeon/3D Dungeon Generation")]
+  [MenuItem("Tools/3D Dungeon Generation")]
   private static void ShowWindow() {
     DungeonEditor dungeonEditor = (DungeonEditor)GetWindow(typeof(DungeonEditor));
     dungeonEditor.minSize = new Vector2(640, 525);
@@ -42,10 +46,15 @@ public class DungeonEditor : EditorWindow {
         break;
       }
     }
+    InitializeOriginalSettings();
+  }
+
+  private void InitializeOriginalSettings() {
+    originalSettings = Instantiate(dungeonSettings);
   }
 
   private void OnGUI() {
-
+    scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
     GUILayout.Space(25);
 
     GUILayout.BeginHorizontal();
@@ -72,10 +81,12 @@ public class DungeonEditor : EditorWindow {
         ShowInformation();
         break;
     }
+    EditorGUILayout.EndScrollView();
   }
 
   private void ShowSettings() {
-
+    
+    if(dungeonSettings) Undo.RecordObject(dungeonSettings, "Modify Dungeon Settings");
 
     GUILayout.BeginHorizontal();
       GUILayout.FlexibleSpace();
@@ -94,18 +105,21 @@ public class DungeonEditor : EditorWindow {
       GUILayout.EndHorizontal();
       
       if(showRoomSize) {
+        GUILayout.BeginVertical(EditorStyles.helpBox);
+        GUILayout.Space(10);
         EditorGUI.indentLevel++;
 
         dungeonSettings.roomSize = Mathf.Max(1, EditorGUILayout.IntField(new GUIContent("Room Size", "X and Z size of every single room."), dungeonSettings.roomSize));
         dungeonSettings.minRooms = Mathf.Max(1, EditorGUILayout.IntField(new GUIContent("Min Rooms", "Minimum amount of room that should be generated."), dungeonSettings.minRooms));
         dungeonSettings.maxRooms = Mathf.Max(dungeonSettings.minRooms + 1, EditorGUILayout.IntField(new GUIContent("Max Rooms", "Maximum amount of room that should be generated."), dungeonSettings.maxRooms));
 
-
         EditorGUI.BeginDisabledGroup(true);
           dungeonSettings.nbRooms = EditorGUILayout.IntField(new GUIContent("Room Count: ", "How much room have been generated so far."), dungeonSettings.nbRooms);
         EditorGUI.EndDisabledGroup();
 
         EditorGUI.indentLevel--;
+        GUILayout.Space(10);
+        GUILayout.EndVertical();
       }
 
       GUILayout.Space(10);
@@ -118,6 +132,8 @@ public class DungeonEditor : EditorWindow {
       GUILayout.EndHorizontal();
 
       if(showDungeonConnexions) {
+        GUILayout.BeginVertical(EditorStyles.helpBox);
+        GUILayout.Space(10);
         EditorGUI.indentLevel++;
 
         EditorGUI.BeginDisabledGroup(dungeonSettings.useRandomSeed);
@@ -129,9 +145,13 @@ public class DungeonEditor : EditorWindow {
         dungeonSettings.dungeonSpread = EditorGUILayout.IntSlider(new GUIContent("Dungeon Spread: ", "How much the dungeon will spread on the X and Z axis. (0 = no gap between rooms | 3 = looks like tree branches (harder to generate))"), dungeonSettings.dungeonSpread, 0, 3);
 
         EditorGUI.indentLevel--;
+        GUILayout.Space(10);
+        GUILayout.EndVertical();
       }
     }
     else {
+      GUILayout.BeginVertical(EditorStyles.helpBox);
+      GUILayout.Space(10);
       GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
           GUILayout.Label("No Dungeon Settings has been found!", EditorStyles.boldLabel);
@@ -142,17 +162,29 @@ public class DungeonEditor : EditorWindow {
           GUILayout.Label("Try creating a new settings preset or select an existing one.");
         GUILayout.FlexibleSpace();
       GUILayout.EndHorizontal();
+      GUILayout.Space(10);
+      GUILayout.EndVertical();
     }
     
 
     SeparatorLine(Color.white);
 
     GUILayout.BeginHorizontal();
+      GUILayout.Space(50);
+      if(dungeonSettings){
+        if(GUILayout.Button(dungeonSettings.CheckForUnsavedChanges(originalSettings) ? "Save Settings*" : "Save Settings", GUILayout.Width(100), GUILayout.Height(25))) {
+          SaveDungeonSettings();
+        }
+      }
+      else {
+        GUILayout.Space(100);
+      }
       GUILayout.FlexibleSpace();
-      if(GUILayout.Button("New Settings Preset")) {
+      if(GUILayout.Button("New Settings Preset", GUILayout.Height(25))) {
         ShowPopupPresetSettings();
       }
       GUILayout.FlexibleSpace();
+      GUILayout.Space(150);
     GUILayout.EndHorizontal();
 
     List<DungeonSettings> listSettingsPreset = LoadDungeonSettings();
@@ -161,9 +193,7 @@ public class DungeonEditor : EditorWindow {
     Handles.color = Color.gray;
     Handles.DrawLine(new Vector3(0, GUILayoutUtility.GetLastRect().yMax), new Vector3(Screen.width, GUILayoutUtility.GetLastRect().yMax));
 
-    scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Height(200));
-
-    GUILayout.Space(25);
+    settingsPresetScroll = EditorGUILayout.BeginScrollView(settingsPresetScroll, GUILayout.Height(210));
 
     if(listSettingsPreset.Count == 0) {
       GUILayout.BeginHorizontal();
@@ -174,6 +204,7 @@ public class DungeonEditor : EditorWindow {
     }
 
     foreach(DungeonSettings settings in listSettingsPreset) {
+      GUILayout.Space(25);
       GUILayout.BeginHorizontal();
 
       GUIStyle greenLabelStyle = new(EditorStyles.boldLabel);
@@ -196,15 +227,18 @@ public class DungeonEditor : EditorWindow {
 
       GUILayout.EndHorizontal();
 
-      SeparatorLine(new Color(0.3f, 0.3f, 0.3f));
+      GUILayout.Space(25);
+      Handles.color = new Color(0.3f, 0.3f, 0.3f);
+      Handles.DrawLine(new Vector3(0, GUILayoutUtility.GetLastRect().yMax), new Vector3(Screen.width, GUILayoutUtility.GetLastRect().yMax));
     }
 
     EditorGUILayout.EndScrollView();
+    Handles.color = Color.gray;
     Handles.DrawLine(new Vector3(0, GUILayoutUtility.GetLastRect().yMax), new Vector3(Screen.width, GUILayoutUtility.GetLastRect().yMax));
   }
 
   void SetActivePreset(DungeonSettings selectedPreset, List<DungeonSettings> listSettingsPreset) {
-    foreach (DungeonSettings settings in listSettingsPreset) {
+    foreach(DungeonSettings settings in listSettingsPreset) {
       settings.activePreset = settings == selectedPreset;
       dungeonSettings = selectedPreset;
     }
@@ -548,5 +582,23 @@ public class DungeonEditor : EditorWindow {
       list.Add(settings);
     }
     return list;
+  }
+
+  private void SaveDungeonSettings() {
+    if(dungeonSettings != null) {
+      EditorUtility.SetDirty(dungeonSettings);
+      AssetDatabase.SaveAssets();
+      InitializeOriginalSettings();
+    }
+  }
+
+  private void OnDestroy() {
+    if(dungeonSettings.CheckForUnsavedChanges(originalSettings)) {
+      bool userWantsToSave = EditorUtility.DisplayDialog("Unsaved Changes", "There are unsaved changes. Do you want to save them before closing?", "Save", "Don't Save");
+      if(userWantsToSave) {
+        SaveDungeonSettings();
+      }
+      else dungeonSettings.CopyValuesFrom(originalSettings);
+    }
   }
 }

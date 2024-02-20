@@ -5,7 +5,7 @@ public class DungeonSettings : ScriptableObject {
 
   // For Editor
   [HideInInspector] public string presetName;
-  [HideInInspector] public bool activePreset = false;
+  public bool activePreset = false;
 
   // For Game
 
@@ -21,4 +21,27 @@ public class DungeonSettings : ScriptableObject {
   [HideInInspector] public int heightVariation;
   [HideInInspector] public int heightVariationChance;
   [HideInInspector] public int dungeonSpread;
+
+  public bool CheckForUnsavedChanges(DungeonSettings other) {
+    return !(roomSize == other.roomSize &&
+           minRooms == other.minRooms &&
+           maxRooms == other.maxRooms &&
+           nbRooms == other.nbRooms &&
+           seed == other.seed &&
+           useRandomSeed == other.useRandomSeed &&
+           heightVariation == other.heightVariation &&
+           heightVariationChance == other.heightVariationChance &&
+           dungeonSpread == other.dungeonSpread);
+  }
+  public void CopyValuesFrom(DungeonSettings other) {
+    roomSize = other.roomSize;
+    minRooms = other.minRooms;
+    maxRooms = other.maxRooms;
+    nbRooms = other.nbRooms;
+    seed = other.seed;
+    useRandomSeed = other.useRandomSeed;
+    heightVariation = other.heightVariation;
+    heightVariationChance = other.heightVariationChance;
+    dungeonSpread = other.dungeonSpread;
+  }
 }
