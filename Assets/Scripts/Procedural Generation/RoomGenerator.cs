@@ -11,13 +11,15 @@ public class RoomGenerator : MonoBehaviour
   public List<GameObject> doors;
   public List<GameObject> rooms;
   private RoomTemplates templates;
+  private DungeonSettings _DS;
   public bool isEnabled = true;
 
   private void Awake() {  // On awakening, start up all value and start the Spawning Loop
     isEnabled = true;
     templates = GameObject.FindGameObjectWithTag("RoomTemplate").GetComponent<RoomTemplates>();
+    _DS = templates.GetDungeonSettings();
     rooms = new List<GameObject>(GameObject.FindGameObjectsWithTag("Room"));
-    templates.nbRooms = rooms.Count;
+    _DS.nbRooms = rooms.Count;
     StartCoroutine(SpawnRoomsCoroutine());
   }
 
@@ -32,7 +34,7 @@ public class RoomGenerator : MonoBehaviour
 
   public void SpawnRoom() {
 
-    if(templates.nbRooms > templates.maxRooms) {  // Reload if more room than the limit
+    if(_DS.nbRooms > _DS.maxRooms) {  // Reload if more room than the limit
       templates.ReloadScene();
     }
 
@@ -75,19 +77,19 @@ public class RoomGenerator : MonoBehaviour
           // string roomName = "";
 
           if(direction.x > 0) {
-            position = new Vector3((doorParent.x + templates.roomX), doorHeight, doorParent.z);
+            position = new Vector3((doorParent.x + _DS.roomSize), doorHeight, doorParent.z);
             // roomName = "X Positif ";
           }
           else if(direction.x < 0) {
-            position = new Vector3((doorParent.x - templates.roomX), doorHeight, doorParent.z);
+            position = new Vector3((doorParent.x - _DS.roomSize), doorHeight, doorParent.z);
             // roomName = "X Negatif ";
           }
           else if(direction.z > 0) {
-            position = new Vector3(doorParent.x, doorHeight, (doorParent.z + templates.roomZ));
+            position = new Vector3(doorParent.x, doorHeight, (doorParent.z + _DS.roomSize));
             // roomName = "Z Positif ";
           }
           else if(direction.z < 0) {
-            position = new Vector3(doorParent.x, doorHeight, (doorParent.z - templates.roomZ));
+            position = new Vector3(doorParent.x, doorHeight, (doorParent.z - _DS.roomSize));
             // roomName = "Z Negatif ";
           }
 
@@ -106,16 +108,16 @@ public class RoomGenerator : MonoBehaviour
           if(canGenerate) {
             GameObject spawnedRoom = Instantiate(templates.templateRoom, position, Quaternion.identity);
             doorBehavior.hasSpawnedRoom = true;
-            templates.nbRooms++;
-            spawnedRoom.name = templates.nbRooms.ToString();
+            _DS.nbRooms++;
+            spawnedRoom.name = _DS.nbRooms.ToString();
             spawnedRoom.tag = "Room";
 
             // ----------------------------------------------------------------------------------------------
             // ----------------------------------------------------------------------------------------------
             // ----------------------------------------------------------------------------------------------
 
-            if(templates.nbRooms < templates.minRooms) {
-              int doorToRemove = Random.Range(templates.spread, 4); // Choose number between 0 and 3
+            if(_DS.nbRooms < _DS.minRooms) {
+              int doorToRemove = Random.Range(_DS.dungeonSpread, 4); // Choose number between 0 and 3
               int childCount = spawnedRoom.transform.childCount;  // Get amount of child for the spawned room
 
               for(int i = 0; i < doorToRemove; i++) { // Destroy a random door "doorToRemove" times
@@ -138,12 +140,12 @@ public class RoomGenerator : MonoBehaviour
               Transform doorTransform = spawnedRoom.transform.GetChild(i).transform;
               int randHeightPercentage = Random.Range(1, 101);
 
-              if(templates.heightVariantPercentage == 0) {
+              if(_DS.heightVariationChance == 0) {
                 doorTransform.position = doorTransform.position; // Stay the same
               }
 
-              else if(randHeightPercentage <= templates.heightVariantPercentage) {
-                doorTransform.position = new Vector3(doorTransform.position.x, doorTransform.position.y + templates.doorSpawnHeight, doorTransform.position.z);
+              else if(randHeightPercentage <= _DS.heightVariationChance) {
+                doorTransform.position = new Vector3(doorTransform.position.x, doorTransform.position.y + _DS.heightVariation, doorTransform.position.z);
               }
 
               DoorBehavior childDoorBehavior = spawnedRoom.transform.GetChild(i).gameObject.GetComponent<DoorBehavior>();

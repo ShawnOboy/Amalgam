@@ -58,13 +58,16 @@ public class DungeonEditor : EditorWindow {
     GUILayout.Space(25);
 
     GUILayout.BeginHorizontal();
-
-      if(GUILayout.Button(tabsName[0], GUILayout.Height(50))) 
+      GUILayout.FlexibleSpace();
+      if(GUILayout.Button(tabsName[0], GUILayout.Height(50), GUILayout.Width(position.width * 0.32f))) 
         currentSection = WindowSection.Settings;
-      if(GUILayout.Button(tabsName[1], GUILayout.Height(50))) 
+      GUILayout.FlexibleSpace();
+      if(GUILayout.Button(tabsName[1], GUILayout.Height(50), GUILayout.Width(position.width * 0.32f))) 
         currentSection = WindowSection.Types;
-      if(GUILayout.Button(tabsName[2], GUILayout.Height(50))) 
+      GUILayout.FlexibleSpace();
+      if(GUILayout.Button(tabsName[2], GUILayout.Height(50), GUILayout.Width(position.width * 0.32f))) 
         currentSection = WindowSection.Information;
+      GUILayout.FlexibleSpace();
 
     GUILayout.EndHorizontal();
 
@@ -170,21 +173,20 @@ public class DungeonEditor : EditorWindow {
     SeparatorLine(Color.white);
 
     GUILayout.BeginHorizontal();
-      GUILayout.Space(50);
+      GUILayout.FlexibleSpace();
+      if(GUILayout.Button("New Settings Preset", GUILayout.Height(25), GUILayout.Width(150))) {
+        ShowPopupPresetSettings();
+      }
+      GUILayout.FlexibleSpace();
       if(dungeonSettings){
-        if(GUILayout.Button(dungeonSettings.CheckForUnsavedChanges(originalSettings) ? "Save Settings*" : "Save Settings", GUILayout.Width(100), GUILayout.Height(25))) {
+        if(GUILayout.Button(dungeonSettings.CheckForUnsavedChanges(originalSettings) ? "Save Settings*" : "Save Settings", GUILayout.Width(150), GUILayout.Height(25))) {
           SaveDungeonSettings();
         }
       }
       else {
-        GUILayout.Space(100);
+        GUILayout.Space(150);
       }
       GUILayout.FlexibleSpace();
-      if(GUILayout.Button("New Settings Preset", GUILayout.Height(25))) {
-        ShowPopupPresetSettings();
-      }
-      GUILayout.FlexibleSpace();
-      GUILayout.Space(150);
     GUILayout.EndHorizontal();
 
     List<DungeonSettings> listSettingsPreset = LoadDungeonSettings();

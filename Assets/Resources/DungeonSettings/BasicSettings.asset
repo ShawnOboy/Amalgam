@@ -17,7 +17,7 @@ MonoBehaviour:
   roomSize: 50
   minRooms: 25
   maxRooms: 45
-  nbRooms: 0
+  nbRooms: 12
   seed: 
   useRandomSeed: 1
   heightVariation: 5

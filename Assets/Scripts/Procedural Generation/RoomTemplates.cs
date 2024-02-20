@@ -86,6 +86,15 @@ public class RoomTemplates : MonoBehaviour
   public GameObject floorParent;
 
 
+  public DungeonSettings GetDungeonSettings() {
+    string folderPath = "DungeonSettings";
+    DungeonSettings [] r_dungeonSettings = Resources.LoadAll<DungeonSettings>(folderPath);
+    foreach(DungeonSettings settings in r_dungeonSettings) {
+      if(settings.activePreset) return settings;
+    }
+    return null;
+  }
+
 
 // Debugging -------------------------------------------------------------------
   public void SpawnRooms() { // Spawn all possible rooms step by step

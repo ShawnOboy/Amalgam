@@ -8,6 +8,7 @@ public class ReplaceTemplates : MonoBehaviour
 {
   public List<RoomBehavior> roomBehaviors;
   private RoomTemplates templates;
+  private DungeonSettings _DS;
   private int roomRotation = 0;
   private int roomNumber = 0;
   private int doorNumber = 0;
@@ -20,6 +21,7 @@ public class ReplaceTemplates : MonoBehaviour
   private void Start() {
     roomGenerator = GameObject.FindGameObjectWithTag("RoomGenerator").GetComponent<RoomGenerator>();
     templates = GameObject.FindGameObjectWithTag("RoomTemplate").GetComponent<RoomTemplates>();
+    _DS = templates.GetDungeonSettings();
     StartCoroutine(WaitCheckDisable());
   }
 
@@ -51,7 +53,7 @@ public class ReplaceTemplates : MonoBehaviour
   [System.Obsolete]
   private void ReplaceTemplate() {
 
-    if(templates.nbRooms < templates.minRooms) {
+    if(_DS.nbRooms < _DS.minRooms) {
       templates.ReloadScene();
     }
 

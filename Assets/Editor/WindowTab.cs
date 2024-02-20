@@ -27,47 +27,37 @@ public class WindowTab : EditorWindow {
   }
 
   private void OnGUI() {
-  
-        GUILayout.BeginHorizontal();
+    GUILayout.BeginHorizontal();
 
-        // Create a vertical layout for the buttons on the left
-        GUILayout.BeginVertical(GUILayout.Width(100));
+    GUILayout.BeginVertical(GUILayout.Width(100));
 
-        // Create buttons to switch between sections
-        if (GUILayout.Button("Infos Structure", GUILayout.Height(50)))
-        {
-            currentSection = WindowSection.InfosStructure;
-        }
-        if (GUILayout.Button("Prefabs Room", GUILayout.Height(50)))
-        {
-            currentSection = WindowSection.PrefabsRoom;
-        }
-        if (GUILayout.Button("How To Generate", GUILayout.Height(50)))
-        {
-            currentSection = WindowSection.HowToGenerate;
-        }
+    if(GUILayout.Button("Infos Structure", GUILayout.Height(50))) {
+      currentSection = WindowSection.InfosStructure;
+    }
+    if(GUILayout.Button("Prefabs Room", GUILayout.Height(50))) {
+      currentSection = WindowSection.PrefabsRoom;
+    }
+    if(GUILayout.Button("How To Generate", GUILayout.Height(50))) {
+      currentSection = WindowSection.HowToGenerate;
+    }
 
-        GUILayout.EndVertical();
+    GUILayout.EndVertical();
+    GUILayout.BeginVertical();
 
-        // Main content area
-        GUILayout.BeginVertical();
+    switch (currentSection) {
+      case WindowSection.InfosStructure:
+        InfosStructure();
+        break;
+      case WindowSection.PrefabsRoom:
+        PefabsRoom();
+        break;
+      case WindowSection.HowToGenerate:
+        HowToGenerate();
+        break;
+    }
 
-        // Display content based on the selected section
-        switch (currentSection)
-        {
-            case WindowSection.InfosStructure:
-                InfosStructure();
-                break;
-            case WindowSection.PrefabsRoom:
-                PefabsRoom();
-                break;
-            case WindowSection.HowToGenerate:
-                HowToGenerate();
-                break;
-        }
-
-        GUILayout.EndVertical();
-        GUILayout.EndHorizontal();
+    GUILayout.EndVertical();
+    GUILayout.EndHorizontal();
   }
 
   private void InfosStructure() {

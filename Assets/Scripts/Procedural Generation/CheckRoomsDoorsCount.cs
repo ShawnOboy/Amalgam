@@ -6,6 +6,7 @@ public class CheckRoomsDoorsCount : MonoBehaviour
 {
 
   private RoomTemplates templates;
+  private DungeonSettings _DS;
 
   [Header ("North")]
   public bool hasDoorNorth;
@@ -25,6 +26,7 @@ public class CheckRoomsDoorsCount : MonoBehaviour
 
   public void ShootRaycasts() {
     templates = GameObject.FindGameObjectWithTag("RoomTemplate").GetComponent<RoomTemplates>();
+    _DS = templates.GetDungeonSettings();
     ShootRaycast(Vector3.forward, 0); // North
     ShootRaycast(Vector3.right, 1);   // East
     ShootRaycast(Vector3.back, 2);    // South
@@ -42,7 +44,7 @@ public class CheckRoomsDoorsCount : MonoBehaviour
 
     RaycastHit hit;
 
-    if (Physics.Raycast(origin, direction, out hit, templates.roomX)) {
+    if (Physics.Raycast(origin, direction, out hit, _DS.roomSize)) {
       if(hit.transform.tag == "Door") {
 
         switch(intDirection) {
